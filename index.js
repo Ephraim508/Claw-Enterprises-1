@@ -72,6 +72,30 @@ app.post("/saveTodos", async (req, res) => {
     }
 });
 
+// Route to search todos based on the query
+// Route to get a todo by its uniqueNo
+app.get("/getTodoById", async (req, res) => {
+    const id = parseInt(req.query.id);
+
+    if (!id) {
+        return res.status(400).send("ID parameter is required");
+    }
+
+    try {
+        // Find the todo in the collection by uniqueNo
+        const todo = await db.collection('todos').findOne({ uniqueNo: id });
+
+        if (!todo) {
+            return res.status(404).json({ message: "Todo not found" });
+        }
+
+        res.json({ todo });
+    } catch (error) {
+        console.error("Error fetching todo:", error);
+        res.status(500).send("Error fetching todo");
+    }
+});
+
 
 
 // Route to delete a todo from the database

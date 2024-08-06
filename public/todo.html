@@ -137,7 +137,30 @@
         .checked {
             text-decoration: line-through;
         }
-        
+        #searchTodoInput {
+    background-color: white;
+    width: 100%;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #e4e7eb;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: "Roboto", sans-serif;
+    margin-top: 20px;
+}
+
+#searchTodoButton {
+    color: white;
+    background-color: #4c63b6;
+    font-family: "Roboto", sans-serif;
+    font-size: 18px;
+    border-width: 0;
+    border-radius: 4px;
+    margin-top: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
     </style>
 </head>
 <body>
@@ -151,6 +174,9 @@
                     </h1>
                     <input type="text" id="todoUserInput" class="todo-user-input" placeholder="What needs to be done?" />
                     <button class="button" id="addTodoButton">Add</button>
+                    <input type="search" id="searchTodoInput" class="todo-user-input" placeholder="Search todos..." />
+<button class="button" id="searchTodoButton">Search</button>
+
                     <h1 class="todo-items-heading">
                         My <span class="todo-items-heading-subpart">Tasks</span>
                     </h1>
@@ -168,6 +194,39 @@
     let todoItemsContainer = document.getElementById("todoItemsContainer");
 let addTodoButton = document.getElementById("addTodoButton");
 let saveTodoButton = document.getElementById("saveTodoButton");
+let searchTodoButton = document.getElementById("searchTodoButton");
+let searchTodoInput = document.getElementById("searchTodoInput");
+
+function onSearchTodo() {
+    let searchQuery = searchTodoInput.value;
+
+    if (!searchQuery) {
+        alert("Please enter a Todo ID");
+        return;
+    }
+
+    fetch('/getTodoById?id=' + encodeURIComponent(searchQuery))
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing todos
+            todoItemsContainer.innerHTML = '';
+
+            // Append the found todo
+            if (data.todo) {
+                createAndAppendTodo(data.todo);
+            } else {
+                alert("Todo not found");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+searchTodoButton.onclick = function() {
+    onSearchTodo();
+};
+
 
 function getTodoListFromLocalStorage() {
     let stringifiedTodoList = localStorage.getItem("todoList");
